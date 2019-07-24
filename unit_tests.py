@@ -12,9 +12,11 @@ def rgb_yiq_test():
 
 
 #%%
-from image import ImageMatrix
-from masks import ConvolutionalMask
 
+from image import ImageMatrix
+from convolution import ConvolutionalMask
+
+#x = ConvolutionalMask("masks/media_3x3.txt")
 x = ConvolutionalMask("masks/1_to_9_3x3.txt")
 y = ImageMatrix("images/lena256color.jpg")
 
@@ -23,6 +25,8 @@ niceimg = x.apply(y)
 import matplotlib.pyplot as plt
 
 plt.imshow(niceimg)
+
+
 
 
 #%%

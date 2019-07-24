@@ -25,6 +25,7 @@ def check_bounds(r,g,b):
 	elif (b > 255): b = 255
 	
 	r,g,b = round(r), round(g), round(b)
-	
+
 	return r,g,b
 
+""
