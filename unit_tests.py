@@ -12,7 +12,7 @@ def rgb_yiq_test():
 
 
 #%%
-
+import time
 from image import ImageMatrix
 from convolution import ConvolutionalMask
 
@@ -20,7 +20,10 @@ from convolution import ConvolutionalMask
 x = ConvolutionalMask("masks/1_to_9_3x3.txt")
 y = ImageMatrix("images/lena256color.jpg")
 
+t0 = time.time()
 niceimg = x.apply(y)
+t1 = time.time()
+print(f"tempo total {t1-t0}")
 
 import matplotlib.pyplot as plt
 
