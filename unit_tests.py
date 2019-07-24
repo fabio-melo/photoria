@@ -11,25 +11,26 @@ def rgb_yiq_test():
   print("RGB_YIQ TEST PASSED!")
 
 
+
+
 #%%
-import time
-from image import ImageMatrix
+
 from convolution import ConvolutionalMask
+from image import ImageMatrix
+from median import MedianMask
 
-#x = ConvolutionalMask("masks/media_3x3.txt")
-x = ConvolutionalMask("masks/1_to_9_3x3.txt")
-y = ImageMatrix("images/lena256color.jpg")
+media = ConvolutionalMask("masks/media_3x3.txt")
+gauss = ConvolutionalMask("masks/gauss_3x3.txt")
+median = MedianMask()
+y = ImageMatrix("images/aaa1.jpg")
 
-t0 = time.time()
-niceimg = x.apply(y)
-t1 = time.time()
-print(f"tempo total {t1-t0}")
 
 import matplotlib.pyplot as plt
 
-plt.imshow(niceimg)
-
-
-
-
+_, ax = plt.subplots(2,2)
+ax[0,0].imshow(y.matrix)
+ax[0,1].imshow(media.apply(y))
+ax[1,0].imshow(gauss.apply(y))
+ax[1,1].imshow(median.apply(y))
+plt.show()
 #%%

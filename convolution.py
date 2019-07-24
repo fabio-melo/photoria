@@ -1,4 +1,5 @@
 #%%
+import time
 import numpy as np
 from utils import check_bounds
 
@@ -24,58 +25,37 @@ class ConvolutionalMask():
     self.matrix = np.array([w[::-1] for w in self.matrix[::-1]])
 
   def apply_on_pixel_dot(self,image,x,y):
-    #cria matriz
+    #cria 
     mtx_sl = np.zeros((self.height, self.width, 3))
-    #popula matriz
+    #popula 
     for ih, mh in enumerate(range(y - self.floor_h, y + self.ceil_h)):
       if (mh < 0) or (mh >= image.height): continue	
       for iw, mw in enumerate(range(x - self.floor_w, x + self.ceil_w)):
         if (mw < 0) or (mw >= image.width): continue
         mtx_sl[ih][iw] = image.matrix[mh][mw]
-
-    #aplica matriz
-
+    #aplica
     mtx = mtx_sl * self.matrix
     mtx = np.sum(mtx, axis=(0,1))
-    mtx = np.clip(mtx, a_min=0, a_max=255)
-    mtx = np.round(mtx)
+
     return mtx
     
 
   def apply(self,image):
-    import time
-    new = np.zeros((image.matrix.shape))
-    
+    mtx = np.zeros((image.matrix.shape))
+
     t0 = time.time()
+
     for y in range(image.height):
       for x in range(image.width):
-        new[y][x] = self.apply_on_pixel_dot(image,x,y)
+        mtx[y][x] = self.apply_on_pixel_dot(image,x,y)
+    
+    mtx = np.clip(mtx, a_min=0, a_max=255)
+    mtx = np.round(mtx)
+    mtx = mtx.astype(int)
+    
     t1 = time.time()
-    print(f"{t1 - t0}")
-    t0 = time.time()
-
-    new = np.array([[self.apply_on_pixel_dot(image,x,y) for x in range(image.width)] for y in range(image.height)])
-    t1 = time.time()
-    print(f"{t1 - t0}")
-    return new
+    print(f"tempo total {t1-t0}")
+    return mtx
 
 
 
-
-
-import time
-from image import ImageMatrix
-
-x = ConvolutionalMask("masks/media_3x3.txt")
-y = ImageMatrix("images/lena256color.jpg")
-
-#t0 = time.time()
-niceimg = x.apply(y)
-#t1 = time.time()
-#print(f"tempo total {t1-t0}")
-#print(niceimg)
-#import matplotlib.pyplot as plt
-
-#plt.imshow(niceimg)
-
-#%%
