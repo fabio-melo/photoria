@@ -51,6 +51,7 @@ class ConvolutionalMask():
         mtx[y][x] = np.sum(res,axis=(0,1))
 
     #CANTOS
+    
     for y in range(self.height):
       for x in range(self.width):
         mtx[y][x] = self.apply_on_pixel_dot(image,x,y)
