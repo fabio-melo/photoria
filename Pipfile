@@ -9,6 +9,9 @@ verify_ssl = true
 numpy = "*"
 scipy = "*"
 imageio = "*"
+ipython = "*"
+jupyter = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
