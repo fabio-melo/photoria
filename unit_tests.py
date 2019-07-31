@@ -34,3 +34,28 @@ ax[1,0].imshow(gauss.apply(y))
 ax[1,1].imshow(median.apply(y))
 plt.show()
 #%%
+
+
+
+ab = ImageData(file='images/salty.ppm')
+media3 = MaskData('masks/media_3x3.txt')
+media5 = MaskData("masks/media_5x5.txt")
+import matplotlib.pyplot as plt
+
+import time
+t0 = time.time()
+ef = convolve(ab, media5)
+t1 = time.time()
+print(f"{t1-t0}")
+#plt.imshow(ef)
+#t0 = time.time()
+#for x in range(10):
+#  ea = median(ab, size_x=3, size_y=3)
+
+#t1 = time.time()
+#print(f"{t1-t0}")
+
+plt.imshow(ef.mtx)
+plt.show()
+
+
