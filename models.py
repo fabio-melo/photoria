@@ -12,6 +12,7 @@ class ImageData():
       try: 
         self.mtx = imread(file)
         self.height, self.width = self.mtx.shape[0], self.mtx.shape[1]
+        self.is_monochrome = True if (len(self.mtx.shape) == 2) else False
        
       except:
         raise Exception("erro no processamento do arquivo")
