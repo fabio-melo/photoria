@@ -1,0 +1,55 @@
+{% extends 'template.html' %}
+{% block content %}
+
+  
+<div class="container mt-3">
+  <div class="row">
+      <div class="col-md-3">
+          {% include '_header.html' %}
+          {% if image %}
+          <div class="card shadow mb-3">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12">
+                      <form id="filterform" action="{{url_for('image', imageid='{{ imageid }}') }}" method="POST">
+                        <div class="input-group mb-3">
+
+                          <select class="custom-select" id="maskoptions" name="maskoptions">
+                            <option selected>Filtros</option>
+                            {% for k,v in masks.items() %}
+                            <option value="{{v}}">{{k}}</option>
+                            {% endfor %}
+                          </select>
+                          <input type="submit" />
+                        </div>
+                      </form>
+
+                  </div>
+    
+                </div>
+              </div>
+            
+
+          {% endif %}
+          {% include '_copyright.html' %}
+        </div>
+         
+        
+        <div class="col-md">
+     
+            {% if image %}
+            <div class="card shadow mb-3">
+              <div class="card-body">
+                <img src="data:image/png;base64, {{ im_plot(image) }}"></img>
+    
+              </div>
+            </div>
+            {% endif %}
+    
+    
+          </div> 
+          </div>
+  </div>
+</div>
+
+{% endblock %}
