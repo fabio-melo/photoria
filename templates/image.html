@@ -1,59 +1,88 @@
 {% extends 'template.html' %}
 {% block content %}
 
-  
+
 <div class="container mt-3">
   <div class="row">
-      <div class="col-md-3">
-          {% include '_header.html' %}
-          {% if image %}
-          <div class="card shadow mb-3">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-12">
-                    <h5> <b>Imagem:</b>{{ imageid }}</h5>
-                      <form id="filterform" action="{{url_for('image', imageid=imageid) }}" method="POST">
-                        <div class="input-group mb-3">
-                        
-                          <select class="custom-select" id="maskoptions" name="maskoptions">
-                            <option selected>Filtros</option>
-                            {% for k,v in masks.items() %}
-                            <option value="{{k}}">{{k}}</option>
-                            {% endfor %}
-                            <div class="dropdown-divider"></div>
-                            <option value="mediana33">Mediana 3X3</option>
-                            <option value="mediana55">Mediana 5X5</option>
-                            <option value="mediana77">Mediana 7X7</option>
-
-                          </select>
-                          <input type="submit" />
-                        </div>
-                      </form>
-
-                  </div>
-    
-                </div>
-              </div>
-              
-          {% endif %}
-          {% include '_copyright.html' %}
+    <div class="col-md-3">
+      {% include '_header.html' %}
+      {% if image %}
+      <div class="card shadow mb-3">
+        <div class="card-header">
+          Informações
         </div>
-         
-        
-        <div class="col-md">
-     
-            {% if image %}
-            <div class="card shadow mb-3">
-              <div class="card-body">
-                <img src="data:image/png;base64, {{ im_plot(image) }}"></img>
-    
-              </div>
+        <div class="card-body">
+        <p><b>Imagem:</b>{{ imageid }}</p>
+        {% if transform %}
+        <p><b>Filtro Utilizado:</b> {{ transform }}</p>
+        {% endif %}
+        </div>
+      </div>
+
+      <div class="card shadow mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+              <form id="filterform" action="{{url_for('image', imageid=imageid) }}" method="POST">
+                <div class="input-group mb-3">
+
+                  <select class="custom-select" id="maskoptions" name="maskoptions">
+                    <option selected>Filtros</option>
+                    {% for k,v in masks.items() %}
+                    <option value="{{k}}">{{k}}</option>
+                    {% endfor %}
+                    <div class="dropdown-divider"></div>
+                    <option value="mediana33">Mediana 3X3</option>
+                    <option value="mediana55">Mediana 5X5</option>
+                    <option value="mediana77">Mediana 7X7</option>
+
+                  </select>
+                  <input type="submit" />
+                </div>
+              </form>
+
             </div>
-            {% endif %}
-    
-    
-          </div> 
+
           </div>
+        </div>
+      </div>
+      {% endif %}
+      {% include '_copyright.html' %}
+
+
+      <div class="col-md">
+
+        {% if image %}
+        <div class="card shadow mb-3">
+          <div class="card-header">
+            Imagem Original
+          </div>
+          <div class="card-body">
+            <img src="data:image/png;base64, {{ im_plot(image) }}"></img>
+
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+
+      {% if newimage %}
+      <div class="col-md">
+
+        <div class="card shadow mb-3">
+          <div class="card-header">
+            Imagem Processada
+          </div>
+
+          <div class="card-body">
+            <img src="data:image/png;base64, {{ im_plot(newimage) }}"></img>
+
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+    </div>
   </div>
 </div>
 

@@ -26,17 +26,19 @@ def image(imageid):
 	transform = request.form.get('maskoptions')
 	if transform:
 		if transform == 'mediana33':
-			img = median(img,3,3)
+			newimg = median(img,3,3)
 		elif transform == 'mediana55':
-			img = median(img,5,5)
+			newimg = median(img,5,5)
 		elif transform == 'mediana77':
-			img = median(img,7,7)
+			newimg = median(img,7,7)
 		else:
 			msk = MaskData(masks[request.form.get('maskoptions')])
-			img = convolve(img, msk)
-		
+			newimg = convolve(img, msk)
+	else:
+		newimg = False
+	print(transform)
 
-	return render_template('image.html',image=img, imageid=imageid, masks=masks)
+	return render_template('image.html',image=img, newimage=newimg,imageid=imageid, masks=masks, transform=transform)
 
 
 
@@ -45,15 +47,13 @@ def image(imageid):
 def image_processor():
 	def im_plot(image):
 
-		img = io.BytesIO()
-		plt.imshow(image.mtx)
-		plt.savefig(img, format='png')
-		img.seek(0)
-
-		plot_url = base64.b64encode(img.getvalue()).decode()
-
-		return plot_url
-
+		pil_img = Image.fromarray(image.mtx)
+		buff = io.BytesIO()
+		pil_img.save(buff, format="JPEG")
+		buff.seek(0)
+			
+		return base64.b64encode(buff.getvalue()).decode()
+		
 	return dict(im_plot=im_plot)
 
 def mask_list():
@@ -71,7 +71,7 @@ def mask_list():
 				
 def img_to_b64(img):
 	pil_img = Image.fromarray(img)
-	buff = BytesIO()
+	buff = io.BytesIO()
 	pil_img.save(buff, format="JPEG")
 	buff.seek(0)
 

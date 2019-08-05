@@ -12,7 +12,6 @@ def convolve(image, mask):
   img,msk = image.mtx, mask.mtx
   img_y, img_x = img.shape[0], img.shape[1]
   msk_y, msk_x = msk.shape[0], msk.shape[1]
-  c_chn = img.shape[2]
   lmt_x, lmt_y = msk_x // 2, msk_y // 2
 
   # criar as bordas e preencher com zeros
@@ -23,9 +22,10 @@ def convolve(image, mask):
   for x in range(lmt_x, img_x - lmt_x):
     for y in range(lmt_y, img_y - lmt_y):
       # extrai a matriz centrada no pivô e convoluciona
-      tmp = img_pd[y-lmt_y:y+lmt_y+1, x- lmt_x:x+lmt_x+1] * msk
-      r[y][x] = np.sum(tmp,axis=(0,1)) # salva na matriz o resultado da soma, mantendo o eixo RGB
-
+      tmp = img_pd[y-lmt_y:y+lmt_y+1, x- lmt_x:x+lmt_x+1]
+      tmp = [np.squeeze(k) for k in np.dsplit(tmp,3)]
+      r[y][x] = np.array([np.sum(k * msk) for k in tmp])
+      
   r = np.round(np.clip(r, a_min=0, a_max=255)) # clipa e arrendonda os limites 
   return ImageData(mtx=r)
 
