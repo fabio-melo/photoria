@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request, url_for, redirect
-from werkzeug import secure_filename
+from werkzeug import secure_filename #pylint:off
 import matplotlib.pyplot as plt
 import io,os,sys, base64, logging, uuid, random
 from PIL import Image
 
 from processing.loaders import load_image, load_cfilter
-from processing.colors import rgb_to_yiq, yiq_to_rgb
+from processing.colors import rgb_to_yiq, yiq_to_rgb,  to_red, to_green, to_blue, to_monochrome
 from processing.convolution import convolve
 from processing.median import median
-
+from processing.presets import laplace
 
 
 app = Flask(__name__)
@@ -36,7 +36,24 @@ def image(imageid):
 	newimg = img
 
 	for kn in request.form.keys():
-		if kn in kernels:
+		if kn == 'laplace': 
+			newimg = laplace(img)
+			transform.append(kn)
+		elif kn == 'to_red':
+			newimg = to_red(img)
+			transform.append(kn)
+		elif kn == 'to_green':
+			newimg = to_green(img)
+			transform.append(kn)
+		elif kn == 'to_blue':
+			newimg = to_blue(img)
+			transform.append(kn)
+		elif kn == 'monochrome':
+			newimg = to_monochrome(img)
+			transform.append(kn)
+
+
+		elif kn in kernels:
 			print(kernels[kn], file=sys.stderr)
 			krn = load_cfilter(kernels[kn])
 			newimg = convolve(newimg, krn)
@@ -58,7 +75,7 @@ def image(imageid):
 def image_processor():
 	def im_plot(image):
 
-		pil_img = Image.fromarray(image)
+		pil_img = Image.fromarray(image.astype('uint8'))
 		buff = io.BytesIO()
 		pil_img.save(buff, format="JPEG")
 		buff.seek(0)
@@ -79,12 +96,17 @@ def kernel_list():
 			
 			if filepath.endswith(".txt"):
 				kernels[file] = filepath
-		
+	kernels['laplace'] = None
+	kernels['to_red'] = None
+	kernels['to_green'] = None
+	kernels['to_blue'] = None
+	kernels['monochrome'] = None
+
 	return kernels
 				
 			
 def img_to_b64(img):
-	pil_img = Image.fromarray(img)
+	pil_img = Image.fromarray(img.astype('uint8'))
 	buff = io.BytesIO()
 	pil_img.save(buff, format="JPEG")
 	buff.seek(0)
@@ -96,4 +118,4 @@ def img_to_b64(img):
 # ------------------ STARTUP -------------------------#
 
 if __name__ == '__main__':
-	app.run(debug = True)
+	app.run(debug = True) #pylint: off
