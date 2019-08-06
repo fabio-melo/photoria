@@ -6,13 +6,13 @@
         <div class="col-md-3">
             {% include '_header.html' %}
             {% include '_copyright.html' %}
-            
+        </div>
       <div class="col-md-6">
         <div class="card shadow mb-3">
           <div class="card-body">
-
+            <h2> Enviar Arquivo</h2>
             <form action="{{url_for('home')}}" method="POST" enctype="multipart/form-data">
-              <input type="file" name="file" />
+              <input type="file" name="file" title="Enviar Imagem" />
               <input type="submit" />
             </form>
 

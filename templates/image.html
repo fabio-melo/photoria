@@ -46,15 +46,17 @@
 										<option value="G">G</option>
 										<option value="B">B</option>
 										<option value="Mono">Mono</option>
-										<option value="Negative">Negativo</option>
-
 									</select>
 
 
+									<div class="custom-control custom-checkbox" id="negatron" name="negative">
+											<input type="checkbox" class="custom-control-input" name="negative" id="negative">
+											<label class="custom-control-label" for="negative">Negativo</label>
+										</div>
+							
 
 								<h5>Filtros</h5>
 
-						
 
 
 									{% for k,v in kernels.items() %}

@@ -5,7 +5,7 @@ import io,os,sys, base64, logging, uuid, random
 from PIL import Image
 
 from processing.loaders import load_image, load_cfilter
-from processing.colors import rgb_to_yiq, yiq_to_rgb,  to_red, to_green, to_blue, to_monochrome
+from processing.colors import to_red, to_green, to_blue, to_monochrome, negative
 from processing.convolution import convolve
 from processing.median import median
 from processing.presets import laplace
@@ -33,38 +33,55 @@ def image(imageid):
 	transform = []
 	print(request.form, file=sys.stderr)
 	
-	newimg = img
+	new = img
+
+	# Cores
+	if 'cores' in request.form.keys():
+		cm = request.form.get("cores")
+		if   cm == 'R': new = to_red(new); transform.append('Red')
+		elif cm == 'G': new = to_green(new); transform.append('Green')
+		elif cm == 'B': new = to_blue(new); transform.append('Blue')
+		elif cm == 'Mono': new = to_monochrome(new); transform.append('Mono')
+
+	#Efeitos
+	for kn in request.form.keys():
+		pass
 
 	for kn in request.form.keys():
+			
+
 		if kn == 'laplace': 
-			newimg = laplace(img)
+			new = laplace(new)
 			transform.append(kn)
 		elif kn == 'to_red':
-			newimg = to_red(img)
+			new = to_red(new)
 			transform.append(kn)
 		elif kn == 'to_green':
-			newimg = to_green(img)
+			new = to_green(new)
 			transform.append(kn)
 		elif kn == 'to_blue':
-			newimg = to_blue(img)
+			new = to_blue(new)
 			transform.append(kn)
 		elif kn == 'monochrome':
-			newimg = to_monochrome(img)
+			new = to_monochrome(new)
 			transform.append(kn)
+		elif kn == 'negative':
+			new = negative(new)
+			transform.append('Negative')
 
 
 		elif kn in kernels:
 			print(kernels[kn], file=sys.stderr)
 			krn = load_cfilter(kernels[kn])
-			newimg = convolve(newimg, krn)
+			new = convolve(new, krn)
 			transform.append(kn)
 	if not transform:
-		newimg = False
+		new = False
 		transform = False
 
 	print(transform)
 
-	return render_template('image.html',image=img, newimage=newimg,imageid=imageid, kernels=kernels, transform=transform)
+	return render_template('image.html',image=img, newimage=new,imageid=imageid, kernels=kernels, transform=transform)
 
 
 
@@ -85,7 +102,6 @@ def image_processor():
 	return dict(im_plot=im_plot)
 
 
-
 def kernel_list():
 	"""retorna a lista de mascaras convolucionais"""
 	kernels = {}
@@ -96,25 +112,10 @@ def kernel_list():
 			
 			if filepath.endswith(".txt"):
 				kernels[file] = filepath
-	kernels['laplace'] = None
-	kernels['to_red'] = None
-	kernels['to_green'] = None
-	kernels['to_blue'] = None
-	kernels['monochrome'] = None
 
 	return kernels
 				
 			
-def img_to_b64(img):
-	pil_img = Image.fromarray(img.astype('uint8'))
-	buff = io.BytesIO()
-	pil_img.save(buff, format="JPEG")
-	buff.seek(0)
-
-	return base64.b64encode(buff.getvalue()).decode()
-
-
-
 # ------------------ STARTUP -------------------------#
 
 if __name__ == '__main__':
