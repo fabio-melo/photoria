@@ -3,8 +3,13 @@ from werkzeug import secure_filename
 import matplotlib.pyplot as plt
 import io,os,sys, base64, logging, uuid, random
 from PIL import Image
-from models import ImageData, MaskData
-from operations import convolve,median
+
+from processing.loaders import load_image, load_cfilter
+from processing.colors import rgb_to_yiq, yiq_to_rgb
+from processing.convolution import convolve
+from processing.median import median
+
+
 
 app = Flask(__name__)
 
@@ -12,42 +17,48 @@ app = Flask(__name__)
 def home():
 	if request.method == 'POST':
 		f = request.files['file']
-		filename = str(random.randint(100000,9999999)) +'.' + f.filename.rsplit('.', 1)[1]	
+		filename =  str(random.randint(100000,9999999)) +'.' + f.filename.rsplit('.', 1)[1]	
 		f.save(secure_filename(filename))
 		return redirect(url_for('image', imageid=filename))
 
 	elif request.method == 'GET':
 		return render_template('index.html',image=False)
 
+
 @app.route('/image/<imageid>/', methods= ['GET','POST'])
 def image(imageid):
-	img = ImageData(imageid)
-	masks = mask_list()
-	transform = request.form.get('maskoptions')
-	if transform:
-		if transform == 'mediana33':
-			newimg = median(img,3,3)
-		elif transform == 'mediana55':
-			newimg = median(img,5,5)
-		elif transform == 'mediana77':
-			newimg = median(img,7,7)
-		else:
-			msk = MaskData(masks[request.form.get('maskoptions')])
-			newimg = convolve(img, msk)
-	else:
+	img = load_image(imageid)
+	kernels = kernel_list()
+
+	transform = []
+	print(request.form, file=sys.stderr)
+	
+	newimg = img
+
+	for kn in request.form.keys():
+		if kn in kernels:
+			print(kernels[kn], file=sys.stderr)
+			krn = load_cfilter(kernels[kn])
+			newimg = convolve(newimg, krn)
+			transform.append(kn)
+	if not transform:
 		newimg = False
+		transform = False
+
 	print(transform)
 
-	return render_template('image.html',image=img, newimage=newimg,imageid=imageid, masks=masks, transform=transform)
+	return render_template('image.html',image=img, newimage=newimg,imageid=imageid, kernels=kernels, transform=transform)
 
 
+
+# UTILS -------------------------------------------------
 
 
 @app.context_processor
 def image_processor():
 	def im_plot(image):
 
-		pil_img = Image.fromarray(image.mtx)
+		pil_img = Image.fromarray(image)
 		buff = io.BytesIO()
 		pil_img.save(buff, format="JPEG")
 		buff.seek(0)
@@ -56,19 +67,22 @@ def image_processor():
 		
 	return dict(im_plot=im_plot)
 
-def mask_list():
-	"""retorna a lista de mascaras convolucionais"""
-	masks = {}
 
-	for subdir, _, files in os.walk('masks'):
+
+def kernel_list():
+	"""retorna a lista de mascaras convolucionais"""
+	kernels = {}
+
+	for subdir, _, files in os.walk('kernels'):
 		for file in files:
 			filepath = subdir + os.sep + file
 			
 			if filepath.endswith(".txt"):
-				masks[file] = filepath
+				kernels[file] = filepath
 		
-	return masks
+	return kernels
 				
+			
 def img_to_b64(img):
 	pil_img = Image.fromarray(img)
 	buff = io.BytesIO()
@@ -76,6 +90,10 @@ def img_to_b64(img):
 	buff.seek(0)
 
 	return base64.b64encode(buff.getvalue()).decode()
+
+
+
+# ------------------ STARTUP -------------------------#
 
 if __name__ == '__main__':
 	app.run(debug = True)

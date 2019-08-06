@@ -1,12 +1,8 @@
 import numpy as np
-from models import ImageData
 
-def rgb_to_yiq(image):
-	img = image.mtx
+def rgb_to_yiq(img):
 	img_y, img_x = img.shape[0], img.shape[1]
 	
-	assert (len(img.shape) == 3)
-
 	r = np.zeros(img.shape, dtype=img.dtype)
 
 	for x in range(img_x):
@@ -19,14 +15,11 @@ def rgb_to_yiq(image):
 
 			r[y][x] = np.array([y_,i_,q_])
 	
-	return ImageData(mtx=r)
+	return img
 
-def yiq_to_rgb(image):
-	img = image.mtx
+def yiq_to_rgb(img):
 	img_y, img_x = img.shape[0], img.shape[1]
 	
-	assert (len(img.shape) == 3)
-
 	r = np.zeros(img.shape, dtype=img.dtype)
 
 	for x in range(img_x):
@@ -41,4 +34,5 @@ def yiq_to_rgb(image):
 	
 	r = np.round(np.clip(r, a_min=0, a_max=255)) # clipa e arrendonda os limites 
 
-	return ImageData(mtx=r)
+	return img
+

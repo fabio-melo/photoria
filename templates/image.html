@@ -6,7 +6,6 @@
   <div class="row">
     <div class="col-md-3">
       {% include '_header.html' %}
-      {% if image %}
       <div class="card shadow mb-3">
         <div class="card-header">
           Informações
@@ -26,17 +25,15 @@
               <form id="filterform" action="{{url_for('image', imageid=imageid) }}" method="POST">
                 <div class="input-group mb-3">
 
-                  <select class="custom-select" id="maskoptions" name="maskoptions">
                     <option selected>Filtros</option>
-                    {% for k,v in masks.items() %}
-                    <option value="{{k}}">{{k}}</option>
-                    {% endfor %}
-                    <div class="dropdown-divider"></div>
-                    <option value="mediana33">Mediana 3X3</option>
-                    <option value="mediana55">Mediana 5X5</option>
-                    <option value="mediana77">Mediana 7X7</option>
+                    {% for k,v in kernels.items() %}
+                    <div class="custom-control custom-checkbox" id="kerneloptions" name="{{k}}">
+                    <input type="checkbox" class="custom-control-input" name="{{k}}" id="{{k}}">
+                    <label class="custom-control-label" for="{{k}}">{{k}}</label>
+                  </div>
 
-                  </select>
+                    {% endfor %}
+                    
                   <input type="submit" />
                 </div>
               </form>
@@ -46,13 +43,11 @@
           </div>
         </div>
       </div>
-      {% endif %}
       {% include '_copyright.html' %}
 
 
       <div class="col-md">
 
-        {% if image %}
         <div class="card shadow mb-3">
           <div class="card-header">
             Imagem Original
@@ -62,11 +57,10 @@
 
           </div>
         </div>
-        {% endif %}
 
       </div>
 
-      {% if newimage %}
+      {% if transform %}
       <div class="col-md">
 
         <div class="card shadow mb-3">
