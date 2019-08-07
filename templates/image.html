@@ -2,113 +2,209 @@
 {% block content %}
 
 
-<div class="container mt-3">
-	<div class="row">
-		<div class="col-md-3">
-			{% include '_header.html' %}
-			<div class="card shadow mb-3">
-				<div class="card-header">
-					Informações
-				</div>
-				<div class="card-body">
-					<p><b>Imagem:</b>{{ imageid }}</p>
-					{% if transform %}
-					<p><b>Filtro Utilizado:</b> {{ transform }}</p>
-					{% endif %}
-				</div>
-			</div>
-
-			<div class="card shadow mb-3">
-					<div class="card-header">
-							Filtros
-						</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-12">
-							<form id="filterform" action="{{url_for('image', imageid=imageid) }}" method="POST">
-								
-								<div class="form-group">
-
-									<div class="custom-control custom-checkbox" id="br" name="brilho">
-											<input type="checkbox" class="custom-control-input" name="brilho" id="brilho">
-											<label class="custom-control-label" for="brilho">Brilho Multiplicativo</label>
-										</div>
-
-										<input type="number" name="brilho_qtd" min="0" max="1" step="0.1">
-								</div>
-
-								<h5>Banda de Cores</h5>
+<div class="container mt-3 p-0">
+  <div class="row">
+    <div class="col-md-3">
+      {% include '_header.html' %}
 
 
-								<select class="custom-select" name="cores">
-										<option selected></option>
-										<option value="R">R</option>
-										<option value="G">G</option>
-										<option value="B">B</option>
-										<option value="Mono">Mono</option>
-									</select>
+      <div class="card shadow mb-3">
+        <div class="card-header">
+          Processamento
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+              <form id="filterform" action="{{url_for('image', imageid=imageid) }}" method="POST">
+
+                <div class="row">
+                  <div class="col">
+                    <h6>Espaço de Cores</h6>
+                  </div>
+
+                  <div class="col">
+                    <select class="custom-select custom-select-sm" name="cores">
+                      <option selected></option>
+                      <option value="R">R</option>
+                      <option value="G">G</option>
+                      <option value="B">B</option>
+                      <option value="Mono">Mono</option>
+                      <option value="Mono">Mono2D</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="custom-control custom-checkbox" id="n1" name="negative">
+                  <input type="checkbox" class="custom-control-input" name="negative" id="negative">
+                  <label class="custom-control-label" for="negative">Negativo YIQ</label>
+                </div>
+
+                <div class="custom-control custom-checkbox" id="n2" name="negativergb">
+                  <input type="checkbox" class="custom-control-input" name="negativergb" id="negativergb">
+                  <label class="custom-control-label" for="negativergb">Negativo RGB</label>
+                </div>
+                <br>
 
 
-									<div class="custom-control custom-checkbox" id="negatron" name="negative">
-											<input type="checkbox" class="custom-control-input" name="negative" id="negative">
-											<label class="custom-control-label" for="negative">Negativo</label>
-										</div>
-							
-
-								<h5>Filtros</h5>
+                <label>Filtros Convolucionais</label>
+                  <div class="custom-control custom-checkbox" id="sobelr" name="sobel">
+                  <input type="checkbox" class="custom-control-input" name="sobel" id="sobel">
+                  <label class="custom-control-label" for="sobel">Sobel</label>
+                  </div>
 
 
+                {% for k,v in kernels.items() %}
+                <div class="custom-control custom-checkbox" id="kernel{{k}}" name="{{k}}">
+                  <input type="checkbox" class="custom-control-input" name="{{k}}" id="{{k}}">
+                  <label class="custom-control-label" for="{{k}}">{{k}}</label>
+                </div>
 
-									{% for k,v in kernels.items() %}
-									<div class="custom-control custom-checkbox" id="kernel{{k}}" name="{{k}}">
-										<input type="checkbox" class="custom-control-input" name="{{k}}" id="{{k}}">
-										<label class="custom-control-label" for="{{k}}">{{k}}</label>
-									</div>
+                {% endfor %}
+                <br>
+                <div class="custom-control custom-checkbox" id="n2" name="mediana">
+                  <input type="checkbox" class="custom-control-input" name="mediana" id="mediana">
+                  <label class="custom-control-label" for="mediana">Filtro Mediana</label>
+                </div>
 
-									{% endfor %}
+                <div class="row">
 
-								</div>
-								<input type="submit"> Processar </div>
+                  <div class="col">
+                    <input type="number" class="form-control" name="medianay" min="3">
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control" name="medianax" min="3">
+                  </div>
+                </div>
+                <br>                
+                  
+                
+                <h5>Efeitos</h5>
 
-							</form>
+                <div class="row">
+                    <div class="col">
+                      <div class="custom-control custom-checkbox" id="limriar" name="limiar">
+                        <input type="checkbox" class="custom-control-input" name="limiar" id="limiar">
+                        <label class="custom-control-label" for="limiar">Limiar</label>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" name="limiar_qt" min="0" max="255" step="1">
+                    </div>
+                  </div>
+                  <br>
 
-						</div>
+                <div class="row">
+                  <div class="col">
+                    <div class="custom-control custom-checkbox" id="br" name="brilhom">
+                      <input type="checkbox" class="custom-control-input" name="brilhom" id="brilho">
+                      <label class="custom-control-label" for="brilho">Brilho Multiplicativo</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <input type="number" class="form-control" name="brilho_mul" min="0"  step="0.1">
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col">
+                      <div class="custom-control custom-checkbox" id="br2" name="brilhoadd">
+                        <input type="checkbox" class="custom-control-input" name="brilhoadd" id="brilhoadd">
+                        <label class="custom-control-label" for="brilhoadd">Brilho Aditivo</label>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" name="brilho_add" min="0" max="255" step="1">
+                    </div>
+                  </div>
+                  <br>
+  
+                  <div class="row">
+                      <div class="col">
+                          <div class="custom-control custom-checkbox" id="br233" name="brilhomultyiq">
+                          <input type="checkbox" class="custom-control-input" name="brilhomultyiq" id="brilhomultyiq">
+                          <label class="custom-control-label" for="brilhomultyiq">Brilho Mult. YIQ</label>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <input type="number" class="form-control" name="brilho_mul_yiq" min="0" step="0.1">
+                      </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col">
+                          <div class="custom-control custom-checkbox" id="br23" name="brilhoaddyiq">
+                            <input type="checkbox" class="custom-control-input" name="brilhoaddyiq" id="brilhoaddyiq">
+                            <label class="custom-control-label" for="brilhoaddyiq">Brilho Add. YIQ</label>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <input type="number" class="form-control" name="brilho_add_yiq" min="0" max="255" step="1">
+                        </div>
+                      </div>
+                      <br>
+            </div>
+            <br>
+            <input type="submit"> Processar
+          </div>
 
-					</div>
-					{% include '_copyright.html' %}
+          </form>
 
-				</div>
+        </div>
 
+      </div>
+      {% include '_copyright.html' %}
 
-			<div class="col">
-
-				<div class="card shadow">
-					<div class="card-header">
-						Imagem Original
-					</div>
-					<div class="card-body">
-						<img src="data:image/png;base64, {{ im_plot(image) }}"></img>
-
-					</div>
-				</div>
+    </div>
 
 
-			{% if transform %}
+    <div class="col-md">
 
-				<div class="card shadow ">
-					<div class="card-header">
-						Imagem Processada
-					</div>
+      {% if transform %}
 
-					<div class="card-body">
-						<img src="data:image/png;base64, {{ im_plot(newimage) }}"></img>
+      <div class="card shadow mb-3 ">
+        <div class="card-header">
+          Imagem Processada
+        </div>
 
-					</div>
-				</div>
+        <div class="card-body">
+          <img class="img-responsive" style='max-width: 40vw;'
+            src="data:image/png;base64, {{ im_plot(newimage) }}"></img>
 
-			{% endif %}
-		</div>
-	</div>
+        </div>
+      </div>
+
+      {% endif %}
+
+
+      <div class="card shadow mb-3 ">
+        <div class="card-header">
+          Imagem Original
+        </div>
+        <div class="card-body">
+          <img class="img-responsive" style='max-width: 40vw;' src="data:image/png;base64, {{ im_plot(image) }}"></img>
+
+        </div>
+      </div>
+
+
+      <div class="card shadow mb-3">
+        <div class="card-header">
+          Informações
+        </div>
+        <div class="card-body">
+          <p><b>Imagem:</b>{{ imageid }}</p>
+          {% if transform %}
+          <p><b>Filtro(s) Aplicados(s):</b> {{ transform }}</p>
+          {% endif %}
+          <p><b>Tempo de Execução:</b> {{ timeexec }} s </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-md-2">
+
+    </div>
+  </div>
 </div>
 
 
